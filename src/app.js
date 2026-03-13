@@ -1,4 +1,5 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import handlebars from 'express-handlebars';
 import {Server} from 'socket.io';
 import mongoose from 'mongoose';
@@ -15,7 +16,9 @@ import initializePassport from './config/passport.config.js';
 
 const app = express();
 
-const uri = 'mongodb+srv://coder:coder2025*@cluster0.1lnusws.mongodb.net/myEcommerce?';
+dotenv.config();
+
+const uri = process.env.MONGO_URL;
 mongoose.connect(uri);
 
 //Handlebars Config

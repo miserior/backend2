@@ -7,10 +7,10 @@ const ExtractJWT = jwt.ExtractJwt;
 const initializePassport = () => {
     passport.use('current', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: 'coderSecretKey'
+        secretOrKey: process.env.JWT_SECRET
     }, async (jwt_payload, done) => {
         try {
-            return done(null, jwt_payload); // Extrae los datos del token
+            return done(null, jwt_payload);
         } catch (error) {
             return done(error);
         }

@@ -1,120 +1,117 @@
 import { Router } from 'express';
-import { productDBManager } from '../dao/productDBManager.js';
-import { cartDBManager } from '../dao/cartDBManager.js';
+import passport from 'passport';
+import { cartService } from '../repositories/index.js';
+import { authorization } from '../middlewares/auth.middleware.js';
 
 const router = Router();
-const ProductService = new productDBManager();
-const CartService = new cartDBManager(ProductService);
 
-router.get('/:cid', async (req, res) => {
+//0. OBTENER TODOS LOS CARRITOS 
 
+router.get('/', async (req, res) => {
     try {
-        const result = await CartService.getProductsFromCartByID(req.params.cid);
-        res.send({
-            status: 'success',
-            payload: result
-        });
+        const carts = await cartService.getCarts(); 
+        res.send({ status: "success", payload: carts });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        res.status(500).send({ status: "error", error: error.message });
     }
 });
+
+
+// 1. CREAR UN CARRITO
 
 router.post('/', async (req, res) => {
-
     try {
-        const result = await CartService.createCart();
-        res.send({
-            status: 'success',
-            payload: result
-        });
+        const result = await cartService.createCart();
+        res.send({ status: "success", payload: result });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        res.status(500).send({ status: "error", error: error.message });
     }
 });
 
-router.post('/:cid/product/:pid', async (req, res) => {
 
+// 2. OBTENER UN CARRITO POR ID 
+
+router.get('/:cid', async (req, res) => {
     try {
-        const result = await CartService.addProductByID(req.params.cid, req.params.pid)
-        res.send({
-            status: 'success',
-            payload: result
-        });
+        const cart = await cartService.getCartById(req.params.cid);
+        if (!cart) return res.status(404).send({ status: "error", error: "Carrito no encontrado" });
+        res.send({ status: "success", payload: cart });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        res.status(500).send({ status: "error", error: error.message });
     }
 });
 
-router.delete('/:cid/product/:pid', async (req, res) => {
 
+// 3. AGREGAR PRODUCTO AL CARRITO
+
+router.post('/:cid/product/:pid', 
+    passport.authenticate('current', { session: false }),
+    authorization('user'), 
+    async (req, res) => {
+        try {
+            const { cid, pid } = req.params;
+            const result = await cartService.addProductToCart(cid, pid);
+            res.send({ status: "success", message: "Producto agregado", payload: result });
+        } catch (error) {
+            res.status(500).send({ status: "error", error: error.message });
+        }
+    }
+);
+
+
+// 4. FINALIZAR COMPRA
+
+router.post('/:cid/purchase', 
+    passport.authenticate('current', { session: false }),
+    async (req, res) => {
+        try {
+            const cartId = req.params.cid;
+            const userEmail = req.user.email; 
+
+            const result = await cartService.purchase(cartId, userEmail);
+
+            if (result.ticket) {
+                res.send({ 
+                    status: "success", 
+                    message: "Compra procesada", 
+                    ticket: result.ticket,
+                    unprocessedProducts: result.unprocessedIds 
+                });
+            } else {
+                res.status(400).send({ 
+                    status: "error", 
+                    message: "No se pudo procesar la compra",
+                    unprocessedProducts: result.unprocessedIds 
+                });
+            }
+        } catch (error) {
+            res.status(500).send({ status: "error", error: error.message });
+        }
+    }
+);
+
+/**
+ * 5. ELIMINAR UN PRODUCTO DEL CARRITO
+ */
+router.delete('/:cid/products/:pid', async (req, res) => {
     try {
-        const result = await CartService.deleteProductByID(req.params.cid, req.params.pid)
-        res.send({
-            status: 'success',
-            payload: result
-        });
+        const { cid, pid } = req.params;
+        const result = await cartService.deleteProductFromCart(cid, pid);
+        res.send({ status: "success", message: "Producto eliminado", payload: result });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        res.status(500).send({ status: "error", error: error.message });
     }
 });
 
-router.put('/:cid', async (req, res) => {
 
-    try {
-        const result = await CartService.updateAllProducts(req.params.cid, req.body.products)
-        res.send({
-            status: 'success',
-            payload: result
-        });
-    } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
-
-router.put('/:cid/product/:pid', async (req, res) => {
-
-    try {
-        const result = await CartService.updateProductByID(req.params.cid, req.params.pid, req.body.quantity)
-        res.send({
-            status: 'success',
-            payload: result
-        });
-    } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
+// 6. VACIAR EL CARRITO
 
 router.delete('/:cid', async (req, res) => {
-
     try {
-        const result = await CartService.deleteAllProducts(req.params.cid)
-        res.send({
-            status: 'success',
-            payload: result
-        });
+        const result = await cartService.emptyCart(req.params.cid);
+        res.send({ status: "success", message: "Carrito vaciado", payload: result });
     } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
+        res.status(500).send({ status: "error", error: error.message });
     }
 });
 

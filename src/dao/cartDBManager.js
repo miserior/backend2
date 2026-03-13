@@ -1,114 +1,64 @@
 import { cartModel } from "./models/cartModel.js";
 
 class cartDBManager {
-
     constructor(productDBManager) {
         this.productDBManager = productDBManager;
     }
 
-    async getAllCarts() {
-        return cartModel.find();
+    async create() {
+        return await cartModel.create({ products: [] });
     }
 
-    async getProductsFromCartByID(cid) {
-        const cart = await cartModel.findOne({_id: cid}).populate('products.product');
+    async getAll() {
+        return await cartModel.find();
+    }
 
+    async getById(cid) {
+        const cart = await cartModel.findOne({ _id: cid }).populate('products.product');
         if (!cart) throw new Error(`El carrito ${cid} no existe!`);
-        
         return cart;
     }
 
-    async createCart() {
-        return await cartModel.create({products: []});
+async addProduct(cid, pid) {
+    // 1. Buscamos el carrito
+    const cart = await cartModel.findById(cid);
+    if (!cart) throw new Error("Carrito no encontrado");
+
+    // 2. Buscamos si el producto ya existe en el carrito
+    const existIndex = cart.products.findIndex(item => 
+        item.product.toString() === pid || item.product._id?.toString() === pid
+    );
+
+    if (existIndex !== -1) {
+        cart.products[existIndex].quantity += 1;
+    } else {
+        cart.products.push({ product: pid, quantity: 1 });
     }
 
-    async addProductByID(cid, pid) {
-        await this.productDBManager.getProductByID(pid);
+    return await cartModel.findByIdAndUpdate(cid, { products: cart.products }, { new: true });
+}
 
-        const cart = await cartModel.findOne({ _id: cid});
-
-        if (!cart) throw new Error(`El carrito ${cid} no existe!`);
-    
-        let i = null;
-        const result = cart.products.filter(
-            (item, index) => {
-                if (item.product.toString() === pid) i = index;
-                return item.product.toString() === pid;
-            }
-        );
-
-        if (result.length > 0) {
-            cart.products[i].quantity += 1;
-        } else {
-            cart.products.push({
-                product: pid,
-                quantity: 1
-            });
-        }
-        await cartModel.updateOne({ _id: cid }, { products: cart.products});
-
-        return await this.getProductsFromCartByID(cid);
+    async update(cid, cartData) {
+        return await cartModel.updateOne({ _id: cid }, { products: cartData.products });
     }
 
-    async deleteProductByID(cid, pid) {
-        await this.productDBManager.getProductByID(pid);
-
-        const cart = await cartModel.findOne({ _id: cid});
-
+    async deleteProduct(cid, pid) {
+        const cart = await cartModel.findOne({ _id: cid });
         if (!cart) throw new Error(`El carrito ${cid} no existe!`);
-    
-        let i = null;
+
         const newProducts = cart.products.filter(item => item.product.toString() !== pid);
-
-        await cartModel.updateOne({ _id: cid }, { products: newProducts});
-        
-        return await this.getProductsFromCartByID(cid);
+        await cartModel.updateOne({ _id: cid }, { products: newProducts });
+        return await this.getById(cid);
     }
 
-    async updateAllProducts(cid, products) {
-
-        //Validate if exist products
-        for (let key in products) {
-            await this.productDBManager.getProductByID(products[key].product);
-        }
-
+    async updateProducts(cid, products) {
         await cartModel.updateOne({ _id: cid }, { products: products });
-        
-        return await this.getProductsFromCartByID(cid)
-    }
-
-    async updateProductByID(cid, pid, quantity) {
-
-        if (!quantity || isNaN(parseInt(quantity))) throw new Error(`La cantidad ingresada no es válida!`);
-
-        await this.productDBManager.getProductByID(pid);
-
-        const cart = await cartModel.findOne({ _id: cid});
-
-        if (!cart) throw new Error(`El carrito ${cid} no existe!`);
-    
-        let i = null;
-        const result = cart.products.filter(
-            (item, index) => {
-                if (item.product.toString() === pid) i = index;
-                return item.product.toString() === pid;
-            }
-        );
-
-        if (result.length === 0) throw new Error(`El producto ${pid} no existe en el carrito ${cid}!`);
-
-        cart.products[i].quantity = parseInt(quantity);
-
-        await cartModel.updateOne({ _id: cid }, { products: cart.products});
-
-        return await this.getProductsFromCartByID(cid);
+        return await this.getById(cid);
     }
 
     async deleteAllProducts(cid) {
-
         await cartModel.updateOne({ _id: cid }, { products: [] });
-        
-        return await this.getProductsFromCartByID(cid)
+        return await this.getById(cid);
     }
 }
 

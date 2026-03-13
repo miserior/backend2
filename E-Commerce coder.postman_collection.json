@@ -1,0 +1,338 @@
+{
+  "info": {
+    "_postman_id": "ec5fa0e6-4b51-4526-ad33-f25a48215bdc",
+    "name": "E-Commerce coder",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31558586"
+  },
+  "item": [
+    {
+      "name": "Ver productos",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Agregar producto",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\": \"Producto Ejemplo\",\r\n    \"description\": \"Descripción del producto\",\r\n    \"code\": \"PROD001\",\r\n    \"price\": 99.99,\r\n    \"stock\": 50,\r\n    \"category\": \"Electrónica\"\r\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Registrar usuario",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"first_name\": \"Sebastian\",\r\n    \"last_name\": \"Ingeniero\",\r\n    \"email\": \"sebastian@test.com\",\r\n    \"age\": 30,\r\n    \"password\": \"123\",\r\n    \"role\": \"user\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/sessions/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "sessions",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Registro de Usuario",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"sebastian@test.com\",\r\n    \"password\": \"128\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/sessions/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "sessions",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"email\": \"tu-email-real@gmail.com\", \"password\": \"123\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/sessions/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "sessions",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Prueba del DTO",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/sessions/current",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "sessions",
+            "current"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Recuperación de Contraseña",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"miserior@gmail.com\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/sessions/forgot-password",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "sessions",
+            "forgot-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cambiar contraseña",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pc2VyaW9yQGdtYWlsLmNvbSIsImlhdCI6MTc3MzM2NzgwMSwiZXhwIjoxNzczMzcxNDAxfQ.0DiMUED4HpIQwAgiE5gyivr3ygeERHVvYH0GAH71V8A\",\r\n  \"newPassword\": \"1234\" \r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/sessions/reset-password",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "sessions",
+            "reset-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Crear un Carrito",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/carts/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "carts",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Agregar un Producto al Carrito",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/carts/69b3784a631bc581561c13ce/product/69b37556db04d85eea618cae",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "carts",
+            "69b3784a631bc581561c13ce",
+            "product",
+            "69b37556db04d85eea618cae"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Ver carritos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/carts/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "carts",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Ver Carrito",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/carts/69b3784a631bc581561c13ce",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "carts",
+            "69b3784a631bc581561c13ce"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Finaliza compra",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/carts/69b3784a631bc581561c13ce/purchase",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "carts",
+            "69b3784a631bc581561c13ce",
+            "purchase"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
